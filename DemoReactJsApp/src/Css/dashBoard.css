@@ -1,0 +1,14 @@
+.containerDashBoard{
+    margin-top: 5rem;
+    border-radius: 1rem;
+    box-shadow: 5px 10px 10px #888888;
+}
+.add-customer{
+    float: right;
+}
+.delete-txt{
+    color: red
+}
+.cus-det{
+    margin-bottom: 1rem;
+}

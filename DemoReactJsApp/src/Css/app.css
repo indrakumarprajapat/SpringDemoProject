@@ -1,0 +1,33 @@
+.form-group{
+	width: 340px;
+	margin: 50px auto;
+	font-size: 15px;
+}
+.form-control, .btn {
+    min-height: 38px;
+    border-radius: 2px;
+}
+.btn {        
+    font-size: 15px;
+    font-weight: bold;
+}
+.text-center a{
+    color: rgb(0, 0, 0);
+}
+.login-box{
+    background-color: #ddd9d9;
+    margin-top: 9rem;
+}
+
+#email{
+    border-radius: 1rem;
+}
+
+#pwd{
+    border-radius: 1rem;
+}
+
+.btn{
+    border-radius: 1rem;
+    
+}

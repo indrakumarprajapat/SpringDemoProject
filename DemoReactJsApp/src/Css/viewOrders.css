@@ -1,0 +1,11 @@
+.viewOrders{
+    margin-top: 1rem;
+    border-radius: 1rem;
+    box-shadow: 5px 10px 10px #888888;
+
+}
+.card-color{
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+    background-color: #7c8088;
+}
