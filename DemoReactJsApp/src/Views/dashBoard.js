@@ -41,7 +41,7 @@ class DashBoard extends React.Component {
     async componentDidMount() {
 
          //get all records
-         const getAllRecords = await serviceInfo.serviceCall("get", `question`, null);
+         const getAllRecords = await serviceInfo.serviceCall("get", `questions`, null);
 
          if (getAllRecords.status === 200 || getAllRecords.status === 201 || getAllRecords.status === 202) {
 
@@ -66,7 +66,7 @@ class DashBoard extends React.Component {
             if (responseResult.status === 200 || responseResult.status === 201 || responseResult.status === 202) {
 
                 //get all records
-                const getAllRecords = await serviceInfo.serviceCall("get", `question`, null);
+                const getAllRecords = await serviceInfo.serviceCall("get", `questions`, null);
 
                 if (getAllRecords.status === 200 || getAllRecords.status === 201 || getAllRecords.status === 202) {
 
@@ -125,7 +125,7 @@ class DashBoard extends React.Component {
             "text": this.state.updatedQuestion,
             "answer": this.state.answer
         }
-        this.endPointServicesCall("put", `question/${this.state.id}`, details, "questionModal")
+        this.endPointServicesCall("put", `questions/${this.state.id}`, details, "questionModal")
     }
     editAnswer(e, row) {
         e.preventDefault();
@@ -151,7 +151,7 @@ class DashBoard extends React.Component {
             "text": this.state.question,
             "answer": this.state.updatedAnswer
         }
-        this.endPointServicesCall("put", `question/${this.state.id}`, details, "answerModel")
+        this.endPointServicesCall("put", `questions/${this.state.id}`, details, "answerModel")
     }
     deleteQuest(e, row) {
         e.preventDefault();
@@ -169,7 +169,7 @@ class DashBoard extends React.Component {
             "text": this.state.question,
             "answer": this.state.answerUpdated
         }
-        this.endPointServicesCall("delete", `question/${this.state.id}`, details, "deleteModel")
+        this.endPointServicesCall("delete", `questions/${this.state.id}`, details, "deleteModel")
     }
     handleSubmit(e) {
         this.setState({ submit: "loading..." })
@@ -181,7 +181,7 @@ class DashBoard extends React.Component {
             "answer": data.get('answer'),
         };
 
-        this.endPointServicesCall("post", "question", details, "insertModal")
+        this.endPointServicesCall("post", "questions", details, "insertModal")
     }
 
     editTable = (cell, row) => {
