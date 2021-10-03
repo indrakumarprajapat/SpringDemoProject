@@ -14,6 +14,8 @@ import {
 } from 'reactstrap';
 import Header from '../Component/header';
 
+//services provider
+const serviceInfo = new ServiceProvider();
 
 class DashBoard extends React.Component {
 
@@ -34,35 +36,55 @@ class DashBoard extends React.Component {
         this.handleSubmit = this.handleSubmit.bind(this);
 
     }
-    componentDidMount(){
-        const getSessionDetails = sessionStorage.getItem('customerQuestDetailState');
 
-        const questDetails = JSON.parse(getSessionDetails);
+    //init method to fetch all the records from table
+    async componentDidMount() {
 
-        this.setState({ customerQuestDetailState: questDetails});
+         //get all records
+         const getAllRecords = await serviceInfo.serviceCall("get", `question`, null);
+
+         if (getAllRecords.status === 200 || getAllRecords.status === 201 || getAllRecords.status === 202) {
+
+             const responseData = JSON.stringify(getAllRecords.data);
+
+             this.setState({ customerQuestDetailState: getAllRecords.data });
+
+             sessionStorage.setItem('customerQuestDetailState', responseData);
+
+             console.log(this.state.customerQuestDetailState);
+
+         }
     }
 
+    //perform api call's
     async endPointServicesCall(method, methodName, data, modal) {
 
         try {
 
-            const serviceInfo = new ServiceProvider();
-
             const responseResult = await serviceInfo.serviceCall(method, methodName, data);
 
-            if (responseResult.status == 200) {
+            if (responseResult.status === 200 || responseResult.status === 201 || responseResult.status === 202) {
 
-                const responseData = JSON.stringify(responseResult.data);
+                //get all records
+                const getAllRecords = await serviceInfo.serviceCall("get", `question`, null);
 
-                this.setState({ customerQuestDetailState: responseResult.data });
+                if (getAllRecords.status === 200 || getAllRecords.status === 201 || getAllRecords.status === 202) {
 
-                sessionStorage.setItem('customerQuestDetailState', responseData);
+                    const responseData = JSON.stringify(getAllRecords.data);
 
-                this.toggleModal(modal);
+                    this.setState({ customerQuestDetailState: getAllRecords.data });
 
-                this.setState({ submit: "Submit" });
+                    sessionStorage.setItem('customerQuestDetailState', responseData);
 
-                console.log(this.state.customerQuestDetailState);
+                    this.toggleModal(modal);
+
+                    this.setState({ submit: "Submit" });
+
+                    console.log(this.state.customerQuestDetailState);
+
+                } else {
+                    this.setState({ showError: true });
+                }
 
             } else {
 
@@ -86,7 +108,7 @@ class DashBoard extends React.Component {
         this.setState({
             question: row.question,
             answer: row.answer,
-            id: row.userId
+            id: row.id
         })
     }
     handleChangeQuestion(e) {
@@ -96,19 +118,22 @@ class DashBoard extends React.Component {
     }
     submitQuestion(e) {
         this.setState({ submit: "loading..." })
+        console.log(this.state.updatedQuestion);
+        console.log(this.state.answer);
         const details = {
-            "question": this.state.updatedQuestion,
+            "id": this.state.id,
+            "text": this.state.updatedQuestion,
             "answer": this.state.answer
         }
-        this.endPointServicesCall("put", `capi/update/${this.state.id}`, details, "questionModal")
+        this.endPointServicesCall("put", `question/${this.state.id}`, details, "questionModal")
     }
     editAnswer(e, row) {
         e.preventDefault();
         this.toggleModal("answerModel")
         this.setState({
-            question: row.question,
+            question: row.text,
             answer: row.answer,
-            id: row.userId
+            id: row.id
         })
     }
     handleChangeAnswer(e) {
@@ -117,12 +142,16 @@ class DashBoard extends React.Component {
         this.setState({ updatedAnswer: answerUpdated });
     }
     submitAnswer(e) {
-        this.setState({ submit: "loading..." })
+        this.setState({ submit: "loading..." });
+        console.log(this.state.question);
+        console.log(this.state.updatedAnswer);
+
         const details = {
-            "question": this.state.question,
+            "id": this.state.id,
+            "text": this.state.question,
             "answer": this.state.updatedAnswer
         }
-        this.endPointServicesCall("put", `capi/update/${this.state.id}`, details, "answerModel")
+        this.endPointServicesCall("put", `question/${this.state.id}`, details, "answerModel")
     }
     deleteQuest(e, row) {
         e.preventDefault();
@@ -130,16 +159,17 @@ class DashBoard extends React.Component {
         this.setState({
             question: row.question,
             answer: row.answer,
-            id: row.userId
+            id: row.id
         })
     }
     submitDelete(e) {
         this.setState({ submit: "loading..." })
         const details = {
-            "question": this.state.question,
+            "id": this.state.id,
+            "text": this.state.question,
             "answer": this.state.answerUpdated
         }
-        this.endPointServicesCall("delete", `capi/delete/${this.state.id}`, details, "deleteModel")
+        this.endPointServicesCall("delete", `question/${this.state.id}`, details, "deleteModel")
     }
     handleSubmit(e) {
         this.setState({ submit: "loading..." })
@@ -147,11 +177,11 @@ class DashBoard extends React.Component {
         const data = new FormData(e.target);
 
         const details = {
-            "question": data.get('question'),
+            "text": data.get('question'),
             "answer": data.get('answer'),
         };
 
-        this.endPointServicesCall("post", "capi", details, "insertModal")
+        this.endPointServicesCall("post", "question", details, "insertModal")
     }
 
     editTable = (cell, row) => {
@@ -194,21 +224,21 @@ class DashBoard extends React.Component {
                                 </h3>
                             </div>
                             <div className="col add-customer">
-                                <button type="button" class="btn btn-primary btn-sm add-customer" onClick={() => this.toggleModal("insertModal")}>Add Quest +</button>
+                                <button type="button" className="btn btn-primary btn-sm add-customer" onClick={() => this.toggleModal("insertModal")}>Add Quest +</button>
                             </div>
 
                         </div>
                         <ToolkitProvider
                             data={this.state.customerQuestDetailState}
-                            keyField="userId"
+                            keyField="id"
                             columns={[
                                 {
-                                    dataField: "userId",
-                                    text: "userId",
+                                    dataField: "id",
+                                    text: "id",
                                     sort: true
                                 },
                                 {
-                                    dataField: "question",
+                                    dataField: "text",
                                     text: "Question",
                                     sort: true
                                 },
@@ -285,7 +315,7 @@ class DashBoard extends React.Component {
                                 </button>
                             </div>
                             <div className="modal-body">
-                                <input type="text" className="form-control" placeholder={this.state.email} name="name" onChange={this.handleChangeAnswer} />
+                                <input type="text" className="form-control" placeholder={this.state.answer} name="name" onChange={this.handleChangeAnswer} />
                             </div>
                             <div className="modal-footer">
                                 <Button color="primary" type="button" onClick={e => this.submitAnswer(e)}>
@@ -313,7 +343,7 @@ class DashBoard extends React.Component {
                                 </button>
                             </div>
                             <div className="modal-body">
-                                Are you sure to delete {this.state.name}
+                                Are you sure to delete 
                             </div>
                             <div className="modal-footer">
                                 <Button color="danger" type="button" onClick={e => this.submitDelete(e)}>
